@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le-Harvester Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: #dce8f5;
+      color: #1e3a52;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .root {
+      background: #eaf2fb;
+      border: 1px solid #b0cce0;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 960px;
+      box-shadow: 0 4px 24px #a0bcd022;
+    }
+
+    .header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px; border-bottom: 1px solid #b8d0e8; padding-bottom: 12px;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0a85c7; box-shadow: 0 0 6px #0a85c788; animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .header-title {
+      font-size: 20px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: #0d2d45;
+    }
+
+    .header-sub {
+      font-size: 12px; color: #6a90aa;
+      font-family: 'Share Tech Mono', monospace; margin-left: auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 14px;
+    }
+
+    .panel {
+      background: #f5faff;
+      border: 1px solid #b8d0e8;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px #a0bcd010;
+    }
+
+    .panel-header {
+      background: #dceef9;
+      padding: 8px 14px;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: #2a7aaa;
+      font-family: 'Share Tech Mono', monospace;
+      display: flex; align-items: center; gap: 6px;
+      border-bottom: 1px solid #b8d0e8;
+    }
+
+    .panel-header .dot { width:6px; height:6px; border-radius:50%; background:#2a7aaa; }
+
+    .cam-panel { grid-column: 1; grid-row: 1 / 3; }
+
+    .cam-body {
+      position: relative; width: 100%; aspect-ratio: 4/3;
+      background: #c8dfee;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    #webcam-video { width:100%; height:100%; object-fit:cover; display:none; }
+
+    .cam-placeholder {
+      display: flex; flex-direction: column; align-items: center; gap: 12px; color: #7aaac8;
+    }
+
+    .cam-placeholder p { font-size:13px; font-family:'Share Tech Mono',monospace; text-align:center; color:#7aaac8; }
+
+    .cam-overlay { position:absolute; inset:0; pointer-events:none; }
+
+    .corner { position:absolute; width:16px; height:16px; border-color:#0a85c766; border-style:solid; }
+    .corner-tl { top:8px; left:8px; border-width:2px 0 0 2px; }
+    .corner-tr { top:8px; right:8px; border-width:2px 2px 0 0; }
+    .corner-bl { bottom:8px; left:8px; border-width:0 0 2px 2px; }
+    .corner-br { bottom:8px; right:8px; border-width:0 2px 2px 0; }
+
+    .cam-status {
+      position:absolute; top:10px; left:50%; transform:translateX(-50%);
+      font-family:'Share Tech Mono',monospace; font-size:10px; color:#0a85c7;
+      background:#0a85c722; border:1px solid #0a85c744;
+      padding:2px 8px; border-radius:3px; letter-spacing:1px; white-space:nowrap;
+    }
+
+    .cam-footer { padding:8px 14px; display:flex; gap:8px; align-items:center; background:#eaf2fb; }
+
+    .btn {
+      font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600;
+      letter-spacing:1px; text-transform:uppercase;
+      padding:5px 14px; border-radius:4px; border:1px solid; cursor:pointer; transition:all 0.15s;
+      display:inline-flex; align-items:center; gap:5px;
+    }
+
+    .btn-primary { background:#0a85c722; border-color:#0a85c766; color:#0a85c7; }
+    .btn-primary:hover { background:#0a85c733; }
+    .btn-danger  { background:#e5242422; border-color:#e5242466; color:#c0191a; }
+    .btn-danger:hover  { background:#e5242433; }
+
+    .cam-fps { margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:11px; color:#7aaac8; }
+
+    .counter-panel { grid-column:2; grid-row:1; }
+
+    .counter-body {
+      padding:20px 16px;
+      display:flex; flex-direction:column; align-items:center; gap:12px;
+    }
+
+    .counter-display {
+      font-family:'Share Tech Mono',monospace; font-size:60px; font-weight:400;
+      color:#0a85c7; text-shadow: 0 0 20px #0a85c722; letter-spacing:4px; line-height:1;
+    }
+
+    .counter-label { font-size:11px; letter-spacing:3px; color:#6a90aa; text-transform:uppercase; }
+
+    .counter-bar-wrap { width:100%; height:4px; background:#c8dff0; border-radius:2px; overflow:hidden; }
+    .counter-bar { height:100%; background:#0a85c7; border-radius:2px; transition:width 0.3s ease; width:0%; }
+
+    .counter-meta { display:flex; gap:16px; width:100%; justify-content:space-between; }
+    .meta-item { display:flex; flex-direction:column; align-items:center; gap:2px; }
+    .meta-val { font-family:'Share Tech Mono',monospace; font-size:14px; color:#2a6080; }
+    .meta-key { font-size:10px; color:#7aaac8; letter-spacing:1px; text-transform:uppercase; }
+
+    .sensor-panel { grid-column:2; grid-row:2; }
+    .sensor-body { padding:16px; display:flex; flex-direction:column; gap:14px; }
+
+    .switch-state {
+      display:flex; align-items:center; gap:10px;
+      padding:12px 16px; border-radius:4px; border:1px solid; transition:all 0.3s;
+    }
+
+    .switch-orb { width:12px; height:12px; border-radius:50%; transition:all 0.3s; }
+    .switch-text { font-family:'Share Tech Mono',monospace; font-size:14px; font-weight:600; letter-spacing:1px; }
+
+    .state-detected { background:#d4f5e722; border-color:#28a86066; }
+    .state-detected .switch-orb  { background:#1c9e58; box-shadow:0 0 8px #1c9e5888; }
+    .state-detected .switch-text { color:#1c7a44; }
+
+    .state-none { background:#fde8e822; border-color:#e5555566; }
+    .state-none .switch-orb  { background:#e03030; box-shadow:0 0 8px #e0303088; }
+    .state-none .switch-text { color:#c02020; }
+
+    .cooldown-wrap { width:100%; }
+    .cooldown-label {
+      font-family:'Share Tech Mono',monospace; font-size:10px;
+      color:#6a90aa; letter-spacing:1px; margin-bottom:4px;
+    }
+    .cooldown-bar-wrap { width:100%; height:3px; background:#c8dff0; border-radius:2px; overflow:hidden; }
+    .cooldown-bar { height:100%; background:#e8960a; border-radius:2px; width:0%; transition:width 0.2s linear; }
+
+    .esp-status { display:flex; align-items:center; gap:6px; font-family:'Share Tech Mono',monospace; font-size:10px; }
+    .esp-dot { width:6px; height:6px; border-radius:50%; }
+    .dot-connected    { background:#1c9e58; box-shadow:0 0 4px #1c9e5888; animation:pulse 1.5s infinite; }
+    .dot-disconnected { background:#e03030; }
+    .dot-connecting   { background:#e8960a; animation:pulse 0.8s infinite; }
+
+    @keyframes scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(400%)} }
+    .scanline {
+      position:absolute; left:0; right:0; height:2px;
+      background:#0a85c710; animation:scanline 4s linear infinite; pointer-events:none;
+    }
+
+    .ws-banner {
+      font-family:'Share Tech Mono',monospace; font-size:11px;
+      padding:6px 14px; background:#dceef9; color:#6a90aa;
+      border-top:1px solid #b8d0e8;
+      display:flex; align-items:center; gap:8px;
+    }
+  </style>
+</head>
+<body>
+<div class="root">
+
+  <div class="header">
+    <div class="logo-dot"></div>
+    <span class="header-title">LeHarvester</span>
+    <span style="color:#9bbcd4;margin:0 6px;">|</span>
+    <span style="font-size:14px;color:#4a80a0;letter-spacing:1px;">Control Dashboard</span>
+    <span class="header-sub" id="sys-time">SYS — 00:00:00</span>
+  </div>
+
+  <div class="grid">
+
+    <!-- WEBCAM -->
+    <div class="panel cam-panel">
+      <div class="panel-header"><div class="dot"></div>Camera Feed</div>
+      <div class="cam-body">
+        <video id="webcam-video" autoplay muted playsinline></video>
+        <div class="cam-placeholder" id="cam-placeholder">
+          <i class="ti ti-camera" style="font-size:48px;opacity:0.4"></i>
+          <p>CAMERA OFFLINE<br><span style="font-size:11px;opacity:0.6">click Start Feed to connect</span></p>
+        </div>
+        <div class="cam-overlay">
+          <div class="corner corner-tl"></div>
+          <div class="corner corner-tr"></div>
+          <div class="corner corner-bl"></div>
+          <div class="corner corner-br"></div>
+          <div class="scanline" id="scanline" style="display:none"></div>
+          <div class="cam-status" id="cam-status">OFFLINE</div>
+        </div>
+      </div>
+      <div class="cam-footer">
+        <button class="btn btn-primary" id="cam-btn" onclick="toggleCam()">
+          <i class="ti ti-player-play"></i> Start Feed
+        </button>
+        <button class="btn btn-danger" id="snap-btn" onclick="takeSnapshot()" style="display:none">
+          <i class="ti ti-camera"></i> Snapshot
+        </button>
+        <span class="cam-fps" id="cam-fps">— FPS</span>
+      </div>
+    </div>
+
+    <!-- COUNTER -->
+    <div class="panel counter-panel">
+      <div class="panel-header">
+        <div class="dot"></div>Counter
+        <span class="esp-status" style="margin-left:auto">
+          <span class="esp-dot dot-disconnected" id="esp-dot"></span>
+          <span id="esp-label" style="color:#c02020">DISCONNECTED</span>
+        </span>
+      </div>
+      <div class="counter-body">
+        <div class="counter-display" id="counter-display">0000</div>
+        <div class="counter-label">Harvest Counter</div>
+        <div class="counter-bar-wrap"><div class="counter-bar" id="counter-bar"></div></div>
+        <div class="counter-meta">
+          <div class="meta-item">
+            <span class="meta-val" id="meta-max">0000</span>
+            <span class="meta-key">max</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-val" id="meta-session">0s</span>
+            <span class="meta-key">uptime</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-val" id="meta-msgs">0</span>
+            <span class="meta-key">msgs rx</span>
+          </div>
+        </div>
+      </div>
+      <div class="ws-banner">
+        <i class="ti ti-wifi" style="font-size:14px"></i>
+        <span id="ws-url">ws://10.183.143.188/ws</span>
+      </div>
+    </div>
+
+    <!-- SENSOR -->
+    <div class="panel sensor-panel">
+      <div class="panel-header"><div class="dot"></div>Run Monitor</div>
+      <div class="sensor-body">
+
+        <div class="switch-state state-none" id="switch-state">
+          <div class="switch-orb" id="switch-orb"></div>
+          <span class="switch-text" id="switch-text">Unplucked</span>
+        </div>
+
+        <div class="cooldown-wrap">
+          <div class="cooldown-label" id="cooldown-label">COOLDOWN — READY</div>
+          <div class="cooldown-bar-wrap">
+            <div class="cooldown-bar" id="cooldown-bar"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const WS_URL = 'ws://10.183.143.188/ws';
+  const COOLDOWN_MS = 5000;
+
+  let camActive = false, videoStream = null;
+  let counterVal = 0, counterMax = 0, sessionStart = Date.now();
+  let msgCount = 0;
+  let ws = null, wsReconnectTimer = null;
+
+  function pad(n, w) { return String(n).padStart(w, '0'); }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('sys-time').textContent =
+      'SYS — ' + pad(now.getHours(),2) + ':' + pad(now.getMinutes(),2) + ':' + pad(now.getSeconds(),2);
+    document.getElementById('meta-session').textContent =
+      Math.floor((Date.now() - sessionStart) / 1000) + 's';
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  function setWsStatus(state) {
+    const dot   = document.getElementById('esp-dot');
+    const label = document.getElementById('esp-label');
+    if (state === 'connected') {
+      dot.className = 'esp-dot dot-connected';
+      label.style.color = '#1c7a44'; label.textContent = 'CONNECTED';
+    } else if (state === 'connecting') {
+      dot.className = 'esp-dot dot-connecting';
+      label.style.color = '#b87000'; label.textContent = 'CONNECTING…';
+    } else {
+      dot.className = 'esp-dot dot-disconnected';
+      label.style.color = '#c02020'; label.textContent = 'DISCONNECTED';
+    }
+  }
+
+  function connectWs() {
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+    setWsStatus('connecting');
+    ws = new WebSocket(WS_URL);
+    ws.onopen = () => {
+      setWsStatus('connected');
+      sessionStart = Date.now();
+      if (wsReconnectTimer) { clearTimeout(wsReconnectTimer); wsReconnectTimer = null; }
+    };
+    ws.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        msgCount++;
+        document.getElementById('meta-msgs').textContent = msgCount;
+        updateCounter(data.count);
+        updateSwitch(data.plucked);
+        updateCooldown(data.cooldown);
+      } catch(err) { console.warn('Bad JSON from ESP32:', e.data); }
+    };
+    ws.onclose = () => {
+      setWsStatus('disconnected');
+      wsReconnectTimer = setTimeout(connectWs, 3000);
+    };
+    ws.onerror = () => { ws.close(); };
+  }
+
+  connectWs();
+
+  function updateCounter(val) {
+    counterVal = val;
+    if (val > counterMax) counterMax = val;
+    document.getElementById('counter-display').textContent = pad(val, 4);
+    document.getElementById('meta-max').textContent = pad(counterMax, 4);
+    document.getElementById('counter-bar').style.width = Math.min((val / 9999) * 100, 100) + '%';
+  }
+
+  function updateSwitch(plucked) {
+    const el  = document.getElementById('switch-state');
+    const txt = document.getElementById('switch-text');
+    el.className    = 'switch-state ' + (plucked ? 'state-detected' : 'state-none');
+    txt.textContent = plucked ? 'Plucked' : 'Unplucked';
+  }
+
+  function updateCooldown(elapsed) {
+    const remaining = Math.max(0, COOLDOWN_MS - elapsed);
+    document.getElementById('cooldown-bar').style.width = ((remaining / COOLDOWN_MS) * 100) + '%';
+    const lbl = document.getElementById('cooldown-label');
+    if (remaining > 0) {
+      lbl.textContent = 'COOLDOWN — ' + (remaining / 1000).toFixed(1) + 's REMAINING';
+      lbl.style.color = '#b87000';
+    } else {
+      lbl.textContent = 'COOLDOWN — READY';
+      lbl.style.color = '#6a90aa';
+    }
+  }
+
+  async function toggleCam() {
+    if (!camActive) {
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        const video = document.getElementById('webcam-video');
+        video.srcObject = videoStream;
+        video.style.display = 'block';
+        document.getElementById('cam-placeholder').style.display = 'none';
+        document.getElementById('scanline').style.display = 'block';
+        document.getElementById('cam-status').textContent = 'LIVE';
+        document.getElementById('cam-status').style.color = '#1c7a44';
+        document.getElementById('cam-status').style.background = '#1c9e5822';
+        document.getElementById('cam-status').style.borderColor = '#1c9e5844';
+        document.getElementById('cam-btn').innerHTML = '<i class="ti ti-player-stop"></i> Stop Feed';
+        document.getElementById('cam-btn').className = 'btn btn-danger';
+        document.getElementById('snap-btn').style.display = 'inline-flex';
+        camActive = true;
+        startFPS();
+      } catch(e) {
+        document.getElementById('cam-status').textContent = 'DENIED';
+        document.getElementById('cam-status').style.color = '#c02020';
+      }
+    } else {
+      if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+      document.getElementById('webcam-video').style.display = 'none';
+      document.getElementById('cam-placeholder').style.display = 'flex';
+      document.getElementById('scanline').style.display = 'none';
+      document.getElementById('cam-status').textContent = 'OFFLINE';
+      document.getElementById('cam-status').style.color = '#0a85c7';
+      document.getElementById('cam-status').style.background = '#0a85c722';
+      document.getElementById('cam-status').style.borderColor = '#0a85c744';
+      document.getElementById('cam-btn').innerHTML = '<i class="ti ti-player-play"></i> Start Feed';
+      document.getElementById('cam-btn').className = 'btn btn-primary';
+      document.getElementById('snap-btn').style.display = 'none';
+      document.getElementById('cam-fps').textContent = '— FPS';
+      camActive = false;
+    }
+  }
+
+  function startFPS() {
+    let frames = 0, lastTime = performance.now();
+    function tick() {
+      if (!camActive) return;
+      frames++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        document.getElementById('cam-fps').textContent = frames + ' FPS';
+        frames = 0; lastTime = now;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function takeSnapshot() {
+    const video = document.getElementById('webcam-video');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const a = document.createElement('a');
+    a.download = 'lerobot-snapshot.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  }
+</script>
+</body>
+</html>

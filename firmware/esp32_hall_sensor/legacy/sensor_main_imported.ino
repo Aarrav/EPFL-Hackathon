@@ -2,9 +2,17 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
 
-// ── WiFi credentials ──────────────────────────────
-const char* ssid     = "OnePlus";
-const char* password = "87654321";
+#ifndef WIFI_SSID
+#define WIFI_SSID "YOUR_WIFI_SSID"
+#endif
+
+#ifndef WIFI_PASSWORD
+#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
+#endif
+
+// WiFi credentials are supplied by PlatformIO build flags.
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
 
 // ── Pin ───────────────────────────────────────────
 #define HALL_SENSOR_PIN 4
@@ -18,7 +26,7 @@ int  counter        = 0;
 bool magnetDetected = false;
 bool lastState      = false;   // tracks previous sensor state
 unsigned long lastTriggerTime = 0;
-const unsigned long COOLDOWN_MS = 15000;  // 5-second debounce window
+const unsigned long COOLDOWN_MS = 15000;
 
 // ── WebSocket event handler ───────────────────────
 void onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client,
@@ -81,7 +89,7 @@ void loop() {
       Serial.printf("Magnet detected! Count: %d\n", counter);
     } else {
       unsigned long remaining = (COOLDOWN_MS - (now - lastTriggerTime)) / 1000;
-      Serial.printf("Cooldown active — %lus remaining, count ignored\n", remaining);
+      Serial.printf("Cooldown active - %lus remaining, count ignored\n", remaining);
     }
   }
 

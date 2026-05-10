@@ -1,20 +1,20 @@
-# detect_fruits.py - Capture image and detect fruits using YOLO
+"""Capture a camera frame and run YOLO fruit detection interactively."""
 
 import cv2
 from ultralytics import YOLO
 
-# Configuration
-CAMERA_INDEX = 1
-YOLO_MODEL_PATH = "YOLO/my_model.pt"
+from .config import (
+    CAMERA_INDEX,
+    DETECTION_CONFIDENCE,
+    FRUIT_CLASSES,
+    YOLO_MODEL_PATH,
+    require_path,
+)
 
-# Fruit classes (adjust based on your model)
-FRUIT_CLASSES = ['red_fruit', 'yellow_fruit', 'green_fruit']
 
 def main():
-    # Load YOLO model
-    model = YOLO(YOLO_MODEL_PATH)
+    model = YOLO(str(require_path(YOLO_MODEL_PATH, "YOLO model")))
 
-    # Open camera
     cap = cv2.VideoCapture(CAMERA_INDEX)
     if not cap.isOpened():
         print("Error: Could not open camera.")
@@ -44,7 +44,7 @@ def main():
                     cls = int(box.cls)
                     conf = float(box.conf)
                     class_name = model.names[cls]
-                    if class_name in FRUIT_CLASSES and conf > 0.5:
+                    if class_name in FRUIT_CLASSES and conf > DETECTION_CONFIDENCE:
                         x1, y1, x2, y2 = box.xyxy[0]
                         center_x = (x1 + x2) / 2
                         center_y = (y1 + y2) / 2
@@ -74,5 +74,4 @@ def main():
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main()</content>
-<parameter name="filePath">c:\Users\20242015\OneDrive - TU Eindhoven\Documents\EPFL hackathon\detect_fruits.py
+    main()

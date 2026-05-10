@@ -1,0 +1,10 @@
+# Core project package and command-line tools.
+-e .
+
+# Upstream robotics stack. core_scripts provides commands such as
+# `lerobot-rollout`, feetech supports SO100/SO101 servo control, kinematics
+# adds the placo-based IK solver, and smolvla supports the VLA demo path.
+lerobot[core_scripts,feetech,kinematics,smolvla]>=0.5.2,<0.6.0
+
+# Firmware build helper. You can also install PlatformIO as a VS Code extension.
+platformio>=6.1,<7.0

@@ -1,0 +1,60 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Conda
+.conda/
+
+# Local third-party library checkouts
+third_party/lerobot/
+lerobot/
+
+# PlatformIO
+.pio/
+firmware/**/.pio/
+firmware/**/.vscode/.browse.c_cpp.db*
+firmware/**/.vscode/c_cpp_properties.json
+firmware/**/.vscode/launch.json
+firmware/**/.vscode/ipch/
+
+# Local run outputs
+runs/
+outputs/
+logs/
+*.log
+wandb/
+
+# Generated datasets and captures. Existing sample captures stay trackable.
+data/local_captures/
+data/raw/
+data/processed/
+models/
+
+# Duplicate/import-drop folders superseded by the organized layout.
+WEBGUI/
+sensor_main/
+/FRUIT.STL
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+/.vscode/
+*.swp
+*~

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=71.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "leharvester"
+version = "0.1.0"
+description = "EPFL hackathon fruit-harvesting prototype built around LeRobot, YOLO, ESP32 telemetry, and a tactile gripper."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "opencv-python>=4.9.0,<4.14.0",
+    "pyserial>=3.5,<4.0",
+    "python-dotenv>=1.0.1,<2.0.0",
+    "ultralytics>=8.3.0,<9.0.0",
+]
+
+[project.scripts]
+leharvester-capture-dataset = "leharvester.dataset_capture:main"
+leharvester-cut = "leharvester.cut_fruit:main"
+leharvester-demo = "leharvester.demo_launcher:main"
+leharvester-detect = "leharvester.detect_fruits:main"
+leharvester-drop = "leharvester.drop_fruit:main"
+leharvester-full-pipeline = "leharvester.full_pipeline:main"
+leharvester-gripper-gui = "leharvester.gripper_gui:main"
+leharvester-policy-inference = "leharvester.policy_inference:main"
+leharvester-pipeline = "leharvester.fruit_plucking_pipeline:main"
+leharvester-telegram-bridge = "leharvester.telegram_alert_bridge:main"
+leharvester-yolo-live = "leharvester.yolo_live:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

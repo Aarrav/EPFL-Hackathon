@@ -295,3 +295,9 @@ leharvester-telegram-bridge
 Hugging Face dataset:
 
 - **[LeHarvester All Tasks Merged Dataset](https://huggingface.co/datasets/shubhamt0802/all_tasks_merged)**
+
+## Models
+
+Trained policy models:
+
+- **[SmolVLA Merged Policy](https://huggingface.co/shubhamt0802/smolvla_merged_policy)**
